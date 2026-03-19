@@ -7,6 +7,7 @@ import io.qameta.allure.junit4.DisplayName;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class OrderListTest extends BaseTest {
@@ -24,7 +25,7 @@ public class OrderListTest extends BaseTest {
     public void getOrdersListShouldReturnOrders() {
         orderClient.getOrdersList()
                 .then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("orders", notNullValue());
     }
 }

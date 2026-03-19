@@ -20,7 +20,7 @@ public class CourierClient {
                 .post(COURIER_PATH);
     }
 
-    @Step("Логин курьера")
+    @Step("Авторизовать курьера")
     public Response loginCourier(CourierCredentials credentials) {
         return given()
                 .header("Content-type", "application/json")

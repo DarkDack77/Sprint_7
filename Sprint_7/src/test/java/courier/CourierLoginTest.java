@@ -12,6 +12,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class CourierLoginTest extends BaseTest {
@@ -48,7 +52,7 @@ public class CourierLoginTest extends BaseTest {
     public void courierCanLogin() {
         courierClient.loginCourier(CourierCredentials.from(courier))
                 .then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("id", notNullValue());
     }
 
@@ -60,7 +64,8 @@ public class CourierLoginTest extends BaseTest {
 
         courierClient.loginCourier(credentials)
                 .then()
-                .statusCode(400);
+                .statusCode(SC_BAD_REQUEST)
+                .body("message", equalTo("Недостаточно данных для входа"));
     }
 
     @Test
@@ -72,7 +77,8 @@ public class CourierLoginTest extends BaseTest {
 
         courierClient.loginCourier(wrongLogin)
                 .then()
-                .statusCode(404);
+                .statusCode(SC_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
     }
 
     @Test
@@ -82,15 +88,10 @@ public class CourierLoginTest extends BaseTest {
         CourierCredentials wrongPassword =
                 new CourierCredentials(courier.getLogin(), "wrongPassword");
 
-        int statusCode = courierClient.loginCourier(wrongPassword)
+        courierClient.loginCourier(wrongPassword)
                 .then()
-                .extract()
-                .statusCode();
-
-        // допускаем нестабильность стенда
-        org.junit.Assert.assertTrue(
-                statusCode == 404 || statusCode == 504
-        );
+                .statusCode(SC_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
     }
 
     @Test
@@ -102,6 +103,7 @@ public class CourierLoginTest extends BaseTest {
 
         courierClient.loginCourier(nonExistentCourier)
                 .then()
-                .statusCode(404);
+                .statusCode(SC_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
     }
 }

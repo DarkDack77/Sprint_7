@@ -1,7 +1,7 @@
 package courier;
 
-import client.CourierClient;
 import base.BaseTest;
+import client.CourierClient;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
@@ -12,6 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_CONFLICT;
+import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.hamcrest.Matchers.equalTo;
 
 public class CourierCreateTest extends BaseTest {
@@ -45,7 +48,7 @@ public class CourierCreateTest extends BaseTest {
         Response createResponse = courierClient.createCourier(courier);
 
         createResponse.then()
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("ok", equalTo(true));
     }
 
@@ -61,7 +64,7 @@ public class CourierCreateTest extends BaseTest {
         Response duplicateResponse = courierClient.createCourier(courier);
 
         duplicateResponse.then()
-                .statusCode(409)
+                .statusCode(SC_CONFLICT)
                 .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
     }
 
@@ -78,7 +81,7 @@ public class CourierCreateTest extends BaseTest {
         Response response = courierClient.createCourier(courierWithoutLogin);
 
         response.then()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
@@ -95,7 +98,7 @@ public class CourierCreateTest extends BaseTest {
         Response response = courierClient.createCourier(courierWithoutPassword);
 
         response.then()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 }
